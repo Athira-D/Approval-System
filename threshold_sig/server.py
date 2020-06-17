@@ -10,7 +10,7 @@ addr_client = {}
 clients = {}
 k=0
 params_str=""
-
+sighs = []
 def incoming_connection():
 
     count = 0
@@ -48,21 +48,48 @@ def send_key(sk,clients):
 def client_connection(conn):
     name = conn.recv(100).decode('utf8')
     global clients
-    clients[conn] = name
     global k
+    clients[conn] = [name,sk[k]]
     conn.send("K "+str(sk[k]))
+    #print(str(sk[k]))
     k=k+1
+    #conn.send("P "+str(params_str))
     print ("in client_connection"+str(len(clients)))
-
+    global counter
+    counter = 0
     while True:
         msg = conn.recv(100).decode('utf8')
         index = msg.find(' ')
         init = msg[0:index]
         msg = msg[index + 1:]
         if init == 'I':
-            broadcast(msg, name + ':')
-
-
+            broadcast(msg, name + ':')    
+        if init == 'S':
+            if counter < t:
+               index2 = msg.find(' ')
+               data = [int(msg[0:index2])]
+            #print(data)
+               key = msg[index2 + 1:]
+               for ski in sk:
+                    if str(ski) == key:
+                        v = ski
+            #print(key)
+               sighs.append(sign(params, v, data))
+               counter= counter +1
+            else:
+            	conn.send("Already Signed")
+            	counter = counter +1
+           #sigs = [sign(params, ski, data) for ski in sk]
+            #print(sighs)
+            if counter == t:
+            	#sighs[2] = None
+                sigma = aggregate_sigma(params, sighs)
+	        print(sigma)
+	        if verify(params, aggr_vk, sigma, data):
+	            conn.send("Verified-PASSED")
+	        else: 
+	            conn.send("ERROR")
+	    #conn.send("R "+str(sigma))
 
 
 
@@ -76,15 +103,17 @@ def broadcast(msg, prefix):
 
 
 host = 'localhost'
-port = 12342
+port = 12354
 addr = (host, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-(t, n) = (2, 3)
 params = setup()
-#print(params)
+print(params)
 for t in params:
 	params_str=params_str+','+str(t)
+#print(len(params_str))	
+(t, n) = (2, 3)	
 (sk, vk) = ttp_keygen(params, t, n)
+aggr_vk = aggregate_vk(params, vk)
 s.bind(addr)
 
 s.listen(5)
