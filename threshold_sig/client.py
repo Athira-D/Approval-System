@@ -8,14 +8,10 @@ def receive():
 
 
 host = 'localhost'
-port = 12345
+port = 12348
 addr = (host,port)
 c = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 x=c.connect(addr)
-if(x==-1):
-	print("Connection Refused\n")
-	return
-
 print("enter your name")
 name = input()
 c.send(bytes(name,"utf8"))

@@ -4,13 +4,15 @@ addr_client = {}
 clients  = {}
 
 def incoming_connection():
+   
     count = 0
-    while count<5:
+    while count<2:
+        #print("GGGG")
         conn, client_addr = s.accept()
         print(client_addr)
         #print(conn)
         addr_client[conn] = client_addr
-	    count=count+1
+        count=count+1
         #print (conn)
         Thread(target = client_connection, args = (conn,)).start()
 
@@ -31,7 +33,7 @@ def broadcast(msg,prefix):
 
 
 host = 'localhost'
-port = 12345
+port = 12348
 addr = (host,port)
 s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
