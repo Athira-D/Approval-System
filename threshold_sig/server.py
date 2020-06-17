@@ -9,6 +9,7 @@ import socket
 addr_client = {}
 clients = {}
 k=0
+params_str=""
 
 def incoming_connection():
 
@@ -80,7 +81,9 @@ addr = (host, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 (t, n) = (2, 3)
 params = setup()
-print(params)
+#print(params)
+for t in params:
+	params_str=params_str+','+str(t)
 (sk, vk) = ttp_keygen(params, t, n)
 s.bind(addr)
 
