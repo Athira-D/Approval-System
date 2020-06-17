@@ -17,6 +17,7 @@ def receive():
         	key=int(data)
         if init=='P':
             data=data.split(',')
+            global params
             for i in range(0,len(data)):
                 params[i]=int(data[i])
                 
