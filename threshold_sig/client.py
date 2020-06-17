@@ -3,6 +3,7 @@ from bls.utils import *
 import socket
 from threading import Thread
 key=0
+params=()
 
 def receive():
     while True:
@@ -14,6 +15,13 @@ def receive():
         if init == 'K':
         	global key
         	key=int(data)
+        if init=='P':
+            data=data.split(',')
+            for i in range(0,len(data)):
+                params[i]=int(data[i])
+                
+            
+            
 
            
 
