@@ -91,12 +91,13 @@ def client_connection(conn):
                    for ski in sk:
                        if str(ski) == key:
                            v = ski
+                           break
             #print(key)
                    sighs.append(sign(params, v, data))
                    conn.send("Signed Successfully")
                    counter= counter +1
                else:
-            	    conn.send("Already Signed")
+            	    conn.send("Already Signed. ")
             	    counter = counter +1
             	
             	#sighs.clear()
@@ -117,8 +118,11 @@ def client_connection(conn):
 	    #conn.send("R "+str(sigma))
             elif msg[0:index2] != message:
 	        conn.send("This transaction is not Initiated")  
-	    elif Initiated == False:
-	        conn.send("Transaction not Initiated")    
+	    else:
+	        if counter > 0:
+	            conn.send("Initiated the transaction again to sign")
+	        else:
+	            conn.send("Transaction not Initiated")        
 
             
             	
@@ -132,7 +136,7 @@ def broadcast(msg, prefix):
 
 
 host = 'localhost'
-port = 12352
+port = 12347
 addr = (host, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 params = setup()
