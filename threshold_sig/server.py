@@ -10,7 +10,6 @@ addr_client = {}
 clients = {}
 k=0
 params_str=""
-sighs = []
 def incoming_connection():
 
     count = 0
@@ -49,6 +48,10 @@ def client_connection(conn):
     name = conn.recv(100).decode('utf8')
     global clients
     global k
+    global sighs
+    global signed
+    signed = False
+    sighs = []
     clients[conn] = [name,sk[k]]
     conn.send("K "+str(sk[k]))
     #print(str(sk[k]))
@@ -56,43 +59,69 @@ def client_connection(conn):
     #conn.send("P "+str(params_str))
     print ("in client_connection"+str(len(clients)))
     global counter
-    counter = 0
+    global message
+    global Initiated
+    #global Al_Initiated
+    #Al_Initited = False
+    Initiated = False
     while True:
         msg = conn.recv(100).decode('utf8')
         index = msg.find(' ')
         init = msg[0:index]
         msg = msg[index + 1:]
-        if init == 'I':
-            broadcast(msg, name + ':')    
+        if init == 'I' and Initiated == False:
+            broadcast(msg, name + ':')
+            broadcast(msg, 'Transaction is initiated :')
+            Initiated = True
+            counter = 0 
+            message = msg 
+            sighs = []
+        elif init == 'I' and Initiated == True:
+            conn.send("Transaction already Initiated")      
         if init == 'S':
-            if counter < t:
-               index2 = msg.find(' ')
-               data = [int(msg[0:index2])]
+            #if counter < t:
+            index2 = msg.find(' ')
+            data = [long(msg[0:index2])]
             #print(data)
-               key = msg[index2 + 1:]
-               for ski in sk:
-                    if str(ski) == key:
-                        v = ski
-            #print(key)
-               sighs.append(sign(params, v, data))
-               counter= counter +1
-            else:
+            key = msg[index2 + 1:]
+            if counter >= t and msg[0:index2] == message:
             	conn.send("Already Signed")
-            	counter = counter +1
+            if Initiated == True and msg[0:index2] == message:
+               if counter < t:   
+                   for ski in sk:
+                       if str(ski) == key:
+                           v = ski
+            #print(key)
+                   sighs.append(sign(params, v, data))
+                   conn.send("Signed Successfully")
+                   counter= counter +1
+               else:
+            	    conn.send("Already Signed")
+            	    counter = counter +1
+            	
+            	#sighs.clear()
            #sigs = [sign(params, ski, data) for ski in sk]
             #print(sighs)
-            if counter == t:
+               if counter == t:
             	#sighs[2] = None
-                sigma = aggregate_sigma(params, sighs)
-	        print(sigma)
-	        if verify(params, aggr_vk, sigma, data):
-	            conn.send("Verified-PASSED")
-	        else: 
-	            conn.send("ERROR")
+                   sigma = aggregate_sigma(params, sighs)
+	           #print(sigma)
+	           if verify(params, aggr_vk, sigma, data):
+	               broadcast(message,'Transaction Approved - Amount :')
+	               #signed = True
+	           else: 
+	               conn.send("ERROR")
+	               
+	           Initiated = False
+	        #break
 	    #conn.send("R "+str(sigma))
+            elif msg[0:index2] != message:
+	        conn.send("This transaction is not Initiated")  
+	    elif Initiated == False:
+	        conn.send("Transaction not Initiated")    
 
-
-
+            
+            	
 
 def broadcast(msg, prefix):
     for sock in clients:
@@ -103,11 +132,11 @@ def broadcast(msg, prefix):
 
 
 host = 'localhost'
-port = 12354
+port = 12352
 addr = (host, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 params = setup()
-print(params)
+#print(params)
 for t in params:
 	params_str=params_str+','+str(t)
 #print(len(params_str))	
