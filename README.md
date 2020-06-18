@@ -23,3 +23,12 @@ The client server system was implemented using Python socket programming and mul
 * Install Python 2.7
 * To install bls-lib, please refer [here](https://github.com/asonnino/bls) 
 
+## Execution ##
+ To run the client program, type the following command in the terminal.   
+  `python client.py`  
+  
+ To run the server program, type the following command in the terminal.  
+ `python server.py`  
+ 
+
+
