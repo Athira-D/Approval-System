@@ -6,7 +6,8 @@ This is a multi-user application that demonstrates the use of a (t,n) threshold 
 The application has been implemented as a client server system with 'n' clients. Every client can do the following:
 
 * Initiate a transaction
-* Sign the transaction  
+* Sign the transaction 
+
 where transaction is an integer.  
 Once the threshold number of 't' clients sign the message, the message is approved. 
 The BLS signature scheme has been used for the signature part. The implementation has been taken from [here](https://github.com/asonnino/bls).
@@ -20,5 +21,5 @@ The client server system was implemented using Python socket programming and mul
 ## Installation guidelines ##
 
 * Install Python 2.7
-* To install bls-lib, please refer [here](https://github.com/asonnino/bls) and http://www.google.fr/ or <http://example.com/>
+* To install bls-lib, please refer [here](https://github.com/asonnino/bls) 
 
