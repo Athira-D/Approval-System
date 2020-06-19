@@ -44,6 +44,7 @@ def send_key(sk,clients):
 
 
 
+
 def client_connection(conn):
     name = conn.recv(100).decode('utf8')
     global clients
@@ -51,8 +52,8 @@ def client_connection(conn):
     global sighs
     global signed
     signed = False
-    sighs = []
-    clients[conn] = [name,sk[k]]
+    sighs = [None,None,None]
+    clients[conn] = [k,name,sk[k]]
     conn.send("K "+str(sk[k]))
     #print(str(sk[k]))
     k=k+1
@@ -66,6 +67,8 @@ def client_connection(conn):
     Initiated = False
     while True:
         msg = conn.recv(100).decode('utf8')
+        print("conn= ")
+        print(conn)
         index = msg.find(' ')
         init = msg[0:index]
         msg = msg[index + 1:]
@@ -75,7 +78,7 @@ def client_connection(conn):
             Initiated = True
             counter = 0 
             message = msg 
-            sighs = []
+            sighs = [None,None,None]
         elif init == 'I' and Initiated == True:
             conn.send("Transaction already Initiated")      
         if init == 'S':
@@ -93,7 +96,14 @@ def client_connection(conn):
                            v = ski
                            break
             #print(key)
-                   sighs.append(sign(params, v, data))
+                   print("v = ")
+                   print(v)
+                   w=clients[conn]
+                   d=w[0]
+                   print("conn,d= ")
+                   print(conn,d)
+                   sighs[d]=sign(params, v, data)
+                   #print("Len of sighs= "+str(len(sighs))+"\n")
                    conn.send("Signed Successfully")
                    counter= counter +1
                else:
@@ -103,8 +113,8 @@ def client_connection(conn):
             	#sighs.clear()
            #sigs = [sign(params, ski, data) for ski in sk]
             #print(sighs)
-               if counter == t:
-            	#sighs[2] = None
+               if (counter==t):
+                   #print("Len of sighs= "+str(len(sighs))+"\n")
                    sigma = aggregate_sigma(params, sighs)
 	           #print(sigma)
 	           if verify(params, aggr_vk, sigma, data):
@@ -136,7 +146,7 @@ def broadcast(msg, prefix):
 
 
 host = 'localhost'
-port = 12347
+port = 12345
 addr = (host, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 params = setup()

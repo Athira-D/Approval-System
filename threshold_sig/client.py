@@ -30,7 +30,7 @@ def receive():
            
 
 host = 'localhost'
-port = 12347
+port = 12345
 addr = (host,port)
 c = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 x=c.connect(addr)
