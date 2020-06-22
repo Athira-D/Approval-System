@@ -107,7 +107,7 @@ def client_connection(conn):
                    conn.send("Signed Successfully")
                    counter= counter +1
                else:
-            	    conn.send("Already Signed. ")
+            	    conn.send("Already Approved. ")
             	    counter = counter +1
             	
             	#sighs.clear()
@@ -146,7 +146,7 @@ def broadcast(msg, prefix):
 
 
 host = 'localhost'
-port = 12345
+port = 12342
 addr = (host, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 params = setup()

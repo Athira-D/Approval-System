@@ -4,6 +4,7 @@ import socket
 from threading import Thread
 key=0
 params=()
+curr=" "
 
 def receive():
     while True:
@@ -12,6 +13,11 @@ def receive():
         index = data.find(' ')
         init = data[0:index]
         data = data[index + 1:]
+        i2=data.find(' ')
+        sec=data[0:i2]
+        if sec=="Approved":
+		global curr
+		curr=" "
         if init == 'K':
         	global key
         	key=int(data)
@@ -30,7 +36,7 @@ def receive():
            
 
 host = 'localhost'
-port = 12345
+port = 12342
 addr = (host,port)
 c = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 x=c.connect(addr)
@@ -46,8 +52,13 @@ while True:
     msg = data[index + 1:]
     if init == 'I':
     	c.send(data)
+        curr=" "
     if init == 'S':
-	c.send(data + " " + str(key))
-
-
+        if curr== msg:
+            print("Already signed this transaction  ")
+        else:
+	 curr=msg
+	 c.send(data+" "+str(key))
+           
+ 
 
